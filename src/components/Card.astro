@@ -1,0 +1,46 @@
+---
+interface Props {
+  slug: string;
+  title: string;
+  mainline?: string;
+  subject: string;
+  bookShort: string;
+  chapterLabel: string;
+  section?: number | null;
+  sectionTitle?: string | null;
+  figNo?: string;
+  badge?: string;
+  thumb?: string;
+}
+
+const {
+  slug, title, mainline, subject, bookShort, chapterLabel,
+  section, sectionTitle, figNo, badge, thumb
+} = Astro.props;
+
+const chapNo = chapterLabel.replace('第', '').replace('章', '');
+const no = figNo || `${chapNo}-${section ? String(section).padStart(2, '0') : '00'}`;
+---
+
+<a class="card" href={`/m/${slug}/`}>
+  <div class="stage">
+    {thumb ? (
+      <img src={thumb} alt={`${title} 课件界面`} loading="lazy" width="720" height="480" />
+    ) : (
+      <div class="fallback">NO PREVIEW</div>
+    )}
+    {badge && <span class="badge">{badge}</span>}
+  </div>
+  <div class="card-body">
+    <div class="card-topline">
+      <span class="card-no">{subject} · {bookShort} · {chapterLabel}</span>
+      <span class="fig-no">FIG. {no}</span>
+    </div>
+    <h3 class="card-title">{title}</h3>
+    {mainline && <p class="card-mainline">{mainline}</p>}
+    <div class="card-meta">
+      <span>{section ? `第${section}节` : '—'}</span>
+      {sectionTitle && <><span class="sep">/</span><span>{sectionTitle}</span></>}
+    </div>
+  </div>
+</a>

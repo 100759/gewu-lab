@@ -1,0 +1,82 @@
+---
+import Base from '../layouts/Base.astro';
+import lessons from '../data/lessons.json';
+import meta from '../data/site-meta.json';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+
+const thumbDir = join(process.cwd(), 'public/thumbs');
+const hasThumb = (slug: string) => existsSync(join(thumbDir, `${slug}.webp`));
+---
+
+<Base title="搜索" description="在格物模型库中搜索课件。">
+  <main>
+    <div class="search-page">
+      <div class="lede">
+        <h1>搜索</h1>
+        <p>按模型名称、科目、教材、章节或知识点查找，共 {lessons.length} 门课件</p>
+      </div>
+      <label class="search-big">
+        <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+          <circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/>
+        </svg>
+        <input id="sq" type="search" placeholder="搜索模型、章节或知识点" autocomplete="off" aria-label="搜索" />
+      </label>
+      <div class="search-hint" id="hint">输入关键词开始搜索</div>
+      <div class="result-list" id="results"></div>
+    </div>
+  </main>
+
+  <script define:vars={{ all: lessons.map((l: any) => ({
+    s: l.slug, t: l.title, j: l.subject, b: l.bookShort, c: l.chapterLabel,
+    sec: l.section, m: l.mainline,
+    thumb: hasThumb(l.slug) ? `/thumbs/${l.slug}.webp` : '',
+    k: `${l.title} ${l.subject} ${l.bookLabel} ${l.bookShort} ${l.chapterLabel} ${l.sectionTitle || ''} ${l.mainline}`
+  })) }}>
+    const input = document.getElementById('sq');
+    const results = document.getElementById('results');
+    const hint = document.getElementById('hint');
+
+    const initial = new URLSearchParams(location.search).get('q') || '';
+    input.value = initial;
+
+    function render(list, q) {
+      if (!q) {
+        results.innerHTML = '';
+        hint.textContent = '输入关键词开始搜索';
+        return;
+      }
+      if (!list.length) {
+        results.innerHTML = '<p class="empty" style="text-align:left;padding:40px 0">没有匹配的课件</p>';
+        hint.textContent = `“${q}” 无结果`;
+        return;
+      }
+      hint.textContent = `找到 ${list.length} 门课件`;
+      results.innerHTML = list.map(l => `
+        <a class="result-item" href="/m/${l.s}/">
+          <div class="ri-thumb">${l.thumb ? `<img src="${l.thumb}" alt="" loading="lazy">` : ''}</div>
+          <div class="ri-body">
+            <div class="ri-title">${l.t}</div>
+            <div class="ri-meta">${l.j} · ${l.b} · ${l.c}${l.sec ? ` 第${l.sec}节` : ''}</div>
+          </div>
+        </a>`).join('');
+    }
+
+    function search(q) {
+      const key = q.trim();
+      if (!key) return render(all, '');
+      const lower = key.toLowerCase();
+      const hits = all.filter(l => l.k.toLowerCase().includes(lower));
+      // 标题命中的排前面
+      hits.sort((a, b) => {
+        const at = a.t.toLowerCase().includes(lower) ? 0 : 1;
+        const bt = b.t.toLowerCase().includes(lower) ? 0 : 1;
+        return at - bt;
+      });
+      render(hits, key);
+    }
+
+    input.addEventListener('input', () => search(input.value));
+    if (initial) search(initial);
+  </script>
+</Base>

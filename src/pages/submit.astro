@@ -1,0 +1,154 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="投稿模型" description="向格物模型库投稿一个高中交互课件。">
+  <div class="filterbar">
+    <span class="crumb"><a href="/">首页</a> / <b>投稿</b></span>
+    <div class="chips"></div>
+    <div class="filter-right"><span class="stat">审核后上线</span></div>
+  </div>
+
+  <main>
+    <div class="submit-page">
+      <div>
+        <div class="submit-intro">
+          <h1>投稿一个模型</h1>
+          <p class="intro">
+            提交后由管理员审核，通过后放入正式库，自动生成演示页与下载地址。
+            课件请尽量做成单个 HTML 文件（样式和脚本内联），这样能离线运行、也方便下载。
+          </p>
+        </div>
+
+        <form class="form-card" id="submitForm" novalidate>
+        <div class="field">
+          <label for="f-name">模型名称 <span class="req">*</span></label>
+          <input id="f-name" name="name" type="text" placeholder="例如：单摆的周期" required />
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="f-subj">科目 <span class="req">*</span></label>
+            <select id="f-subj" name="subject">
+              <option>物理</option><option>化学</option><option>生物</option><option>地理</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="f-book">教材 <span class="req">*</span></label>
+            <select id="f-book" name="book">
+              <option>必修第一册</option><option>必修第二册</option><option>必修第三册</option>
+              <option>选择性必修第一册</option><option>选择性必修第二册</option><option>选择性必修第三册</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="f-ch">章节</label>
+            <input id="f-ch" name="chapter" type="text" placeholder="第二章 第3节" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="f-desc">一句话说明</label>
+          <textarea id="f-desc" name="desc" placeholder="这个模型演示什么？适合哪一节讲？"></textarea>
+        </div>
+
+        <div class="field">
+          <label>模型文件</label>
+          <div class="upload" id="uploadBox" tabindex="0" role="button">
+            <div class="u-main">点击选择文件，或拖拽到这里</div>
+            <div class="u-hint">HTML 单文件 · 不超过 25 MB</div>
+          </div>
+          <input id="fileInput" type="file" accept=".html" hidden />
+        </div>
+
+        <div class="or-line">或提供下载链接</div>
+
+        <div class="field">
+          <label for="f-link">外部链接</label>
+          <input id="f-link" name="link" type="text" placeholder="https://…（大文件请填网盘或直链）" />
+        </div>
+
+        <div class="field">
+          <label for="f-contact">联系方式（选填）</label>
+          <input id="f-contact" name="contact" type="text" placeholder="邮箱或微信，用于审核结果反馈" />
+        </div>
+
+        <div class="form-foot">
+          <span class="form-note">
+            提交即表示同意本站按 CC BY-NC 4.0 协议分享；第三方资源请注明出处与授权。
+          </span>
+          <button class="btn-solid" type="submit">提交审核</button>
+        </div>
+      </form>
+      </div>
+
+      <aside class="submit-steps">
+        <div class="submit-step">
+          <span class="ss-no">01</span>
+          <div class="ss-body">
+            <div class="ss-t">提交课件</div>
+            <div class="ss-d">填名称、科目、教材与章节，上传 HTML 文件或提供下载链接。</div>
+          </div>
+        </div>
+        <div class="submit-step">
+          <span class="ss-no">02</span>
+          <div class="ss-body">
+            <div class="ss-t">人工审核</div>
+            <div class="ss-d">检查课件能否正常运行、教材定位是否准确、来源与授权是否清楚。</div>
+          </div>
+        </div>
+        <div class="submit-step">
+          <span class="ss-no">03</span>
+          <div class="ss-body">
+            <div class="ss-t">上线</div>
+            <div class="ss-d">通过后放入正式库，自动生成演示页、缩略图与下载地址。</div>
+          </div>
+        </div>
+        <div class="submit-step">
+          <span class="ss-no">04</span>
+          <div class="ss-body">
+            <div class="ss-t">署名</div>
+            <div class="ss-d">课件会标注作者信息。默认按 CC BY-NC 4.0 分享，仅限非商业教学用途。</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <div class="toast" id="toast">已提交，等待审核</div>
+
+  <script>
+    const form = document.getElementById('submitForm');
+    const toast = document.getElementById('toast');
+    const box = document.getElementById('uploadBox');
+    const fileInput = document.getElementById('fileInput');
+    const nameInput = document.getElementById('f-name');
+
+    box?.addEventListener('click', () => fileInput.click());
+    box?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
+    });
+    fileInput?.addEventListener('change', () => {
+      const f = fileInput.files?.[0];
+      if (f) {
+        const main = box.querySelector('.u-main');
+        main.textContent = `已选择：${f.name}`;
+        box.style.borderColor = 'var(--ink-3)';
+      }
+    });
+
+    form?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!nameInput.value.trim()) {
+        nameInput.style.borderColor = 'var(--red)';
+        nameInput.focus();
+        return;
+      }
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2800);
+      form.reset();
+      box.querySelector('.u-main').textContent = '点击选择文件，或拖拽到这里';
+      box.style.borderColor = '';
+    });
+    nameInput?.addEventListener('input', () => { nameInput.style.borderColor = ''; });
+  </script>
+</Base>

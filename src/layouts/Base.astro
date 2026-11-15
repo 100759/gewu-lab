@@ -1,0 +1,105 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  subject?: string;
+  noFooter?: boolean;
+}
+
+const {
+  title = '格物 · 高中交互模型库',
+  description = '按人教版教材章节整理的高中交互式教学模型，打开即演示，可下载用于课堂。',
+  subject,
+  noFooter = false
+} = Astro.props;
+
+const fullTitle = title.includes('格物') ? title : `${title} · 格物`;
+
+const SUBJECTS = [
+  { name: '物理', slug: 'wuli' },
+  { name: '化学', slug: 'huaxue' },
+  { name: '生物', slug: 'shengwu' },
+  { name: '地理', slug: 'dili' }
+];
+const path = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{fullTitle}</title>
+  <meta name="description" content={description} />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <meta property="og:title" content={fullTitle} />
+  <meta property="og:description" content={description} />
+  <meta property="og:type" content="website" />
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="/">
+    <span class="brand-mark">格物</span>
+    <span class="brand-sub">INTERACTIVE&nbsp;LAB</span>
+  </a>
+  <nav class="nav" aria-label="科目">
+    <a href="/" aria-current={path === '/' ? 'page' : undefined}>全部</a>
+    {SUBJECTS.map(s => (
+      <a href={`/${s.slug}/`} aria-current={path.startsWith(`/${s.slug}/`) ? 'page' : undefined}>{s.name}</a>
+    ))}
+  </nav>
+  <label class="search">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+      <circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/>
+    </svg>
+    <input id="q" type="search" placeholder="搜索模型、章节或知识点" autocomplete="off" aria-label="搜索" />
+    <kbd>/</kbd>
+  </label>
+  <a class="btn-submit" href="/submit/">
+    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+      <path d="M8 11V2M4.5 5.5L8 2l3.5 3.5M2 11v2.5h12V11"/>
+    </svg>
+    投稿模型
+  </a>
+</header>
+
+<slot />
+
+{!noFooter && (
+<footer class="footer">
+  <div>
+    <div class="f-brand">格物 · 高中交互模型库</div>
+    <p class="f-note">
+      课件内容来自 <a href="https://lab.tongjiang.app" target="_blank" rel="noopener">铜匠实验室（Tongjiang Lab）</a>，
+      以 <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a> 协议分享，
+      仅限非商业教学用途，转载请署名原作者。
+    </p>
+  </div>
+  <div class="f-right">
+    <a href="/about/">关于与授权</a>
+    <a href="/submit/">投稿</a>
+    <a href="https://lab.tongjiang.app" target="_blank" rel="noopener">原始站点 ↗</a>
+  </div>
+</footer>
+)}
+
+<script>
+  const q = document.getElementById('q') as HTMLInputElement | null;
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+      e.preventDefault();
+      q?.focus();
+    }
+  });
+  q?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && q.value.trim()) {
+      location.href = `/search/?q=${encodeURIComponent(q.value.trim())}`;
+    }
+  });
+</script>
+
+</body>
+</html>

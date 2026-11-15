@@ -1,0 +1,100 @@
+---
+import Base from '../layouts/Base.astro';
+import Card from '../components/Card.astro';
+import lessons from '../data/lessons.json';
+import meta from '../data/site-meta.json';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+
+const thumbDir = join(process.cwd(), 'public/thumbs');
+const hasThumb = (slug: string) => existsSync(join(thumbDir, `${slug}.webp`));
+
+// 按 科目 → 册 → 章 组织
+const groups = meta.subjects.map(s => {
+  const inSubj = lessons.filter(l => l.subject === s.name);
+  const books = s.books.map(b => {
+    const inBook = inSubj.filter(l => l.bookKey === b.key);
+    const chapKeys = [...new Set(inBook.map(l => l.chapterKey))]
+      .sort((a, b) => parseInt(a.slice(2)) - parseInt(b.slice(2)));
+    const chapters = chapKeys.map(ck => ({
+      key: ck,
+      label: inBook.find(l => l.chapterKey === ck)!.chapterLabel,
+      items: inBook.filter(l => l.chapterKey === ck)
+    }));
+    return { ...b, chapters };
+  });
+  return { ...s, books };
+});
+---
+
+<Base title="全部课件">
+  <div class="filterbar">
+    <span class="crumb">人教版 / <b>全部课件</b></span>
+    <div class="chips">
+      <a class="chip" href="/" >全部 <span class="n">{lessons.length}</span></a>
+      {meta.subjects.map(s => (
+        <a class="chip" href={`/${s.slug}/`}>{s.name} <span class="n">{s.count}</span></a>
+      ))}
+    </div>
+    <div class="filter-right">
+      <span class="stat"><b>{lessons.length}</b> 门</span>
+    </div>
+  </div>
+
+  <main>
+    <div class="lede">
+      <h1>全部课件</h1>
+      <p>按「科目 → 教材 → 章节」逐层展开</p>
+    </div>
+
+    {groups.map(g => (
+      <section>
+        <div class="sec-head" id={g.slug}>
+          <h2>{g.name}</h2>
+          <span class="num">{String(g.count).padStart(2, '0')}</span>
+          <span class="hint">{g.books.map(b => b.label).join(' / ')}</span>
+        </div>
+
+        {g.books.map(b => (
+          <div style="margin-bottom:14px">
+            <div class="book-head">
+              <span class="bk-label">{b.label}</span>
+              <span class="bk-count">{b.count} 门</span>
+            </div>
+            {b.chapters.map(c => (
+              <div class="chapter-row">
+                <div class="chapter-rail">
+                  <span class="cr-label">{c.label}</span>
+                  <span class="cr-count">{c.items.length} 门</span>
+                </div>
+                <div class={`chapter-cards${c.items.length <= 2 ? ' sparse' : ''}`}>
+                  {c.items.map(l => (
+                    <Card
+                      slug={l.slug}
+                      title={l.title}
+                      mainline={l.mainline}
+                      subject={l.subject}
+                      bookShort={l.bookShort}
+                      chapterLabel={l.chapterLabel}
+                      section={l.section}
+                      sectionTitle={l.sectionTitle}
+                      thumb={hasThumb(l.slug) ? `/thumbs/${l.slug}.webp` : undefined}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        ))}
+      </section>
+    ))}
+  </main>
+</Base>
+
+<style>
+  @media(max-width:900px){
+    .chapter-row{grid-template-columns:1fr;gap:10px;padding:14px 0}
+    .chapter-rail{display:flex;align-items:baseline;gap:8px}
+    .chapter-rail .cr-count{margin-top:0}
+  }
+</style>

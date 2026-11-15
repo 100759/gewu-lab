@@ -1,0 +1,136 @@
+{
+ "nameZh": "铜匠实验室",
+ "name": "Tongjiang Lab",
+ "site": "https://lab.tongjiang.app",
+ "descriptionZh": "免费、可交互的高中科学 3D 实验课件，覆盖物理、化学、生物、地理。每门课是一个可离线运行的自包含 HTML 文件。",
+ "license": "CC BY-NC 4.0",
+ "licenseUrl": "https://creativecommons.org/licenses/by-nc/4.0/",
+ "textbookEdition": "人教版 2019（普通高中课程标准）",
+ "lessonCount": 54,
+ "stepCount": 453,
+ "subjects": [
+  {
+   "name": "物理",
+   "slug": "wuli",
+   "order": 1,
+   "count": 10,
+   "books": [
+    {
+     "key": "bx1",
+     "label": "必修第一册",
+     "short": "必修一",
+     "order": 1,
+     "count": 1
+    },
+    {
+     "key": "bx2",
+     "label": "必修第二册",
+     "short": "必修二",
+     "order": 2,
+     "count": 3
+    },
+    {
+     "key": "bx3",
+     "label": "必修第三册",
+     "short": "必修三",
+     "order": 3,
+     "count": 3
+    },
+    {
+     "key": "xxbx2",
+     "label": "选择性必修二册",
+     "short": "选必二",
+     "order": 12,
+     "count": 1
+    },
+    {
+     "key": "xxbx3",
+     "label": "选择性必修三册",
+     "short": "选必三",
+     "order": 13,
+     "count": 2
+    }
+   ]
+  },
+  {
+   "name": "化学",
+   "slug": "huaxue",
+   "order": 2,
+   "count": 25,
+   "books": [
+    {
+     "key": "bx1",
+     "label": "必修第一册",
+     "short": "必修一",
+     "order": 1,
+     "count": 6
+    },
+    {
+     "key": "bx2",
+     "label": "必修第二册",
+     "short": "必修二",
+     "order": 2,
+     "count": 13
+    },
+    {
+     "key": "xxbx1",
+     "label": "选择性必修一册",
+     "short": "选必一",
+     "order": 11,
+     "count": 6
+    }
+   ]
+  },
+  {
+   "name": "生物",
+   "slug": "shengwu",
+   "order": 3,
+   "count": 5,
+   "books": [
+    {
+     "key": "bx1",
+     "label": "必修第一册",
+     "short": "必修一",
+     "order": 1,
+     "count": 4
+    },
+    {
+     "key": "xxbx1",
+     "label": "选择性必修一册",
+     "short": "选必一",
+     "order": 11,
+     "count": 1
+    }
+   ]
+  },
+  {
+   "name": "地理",
+   "slug": "dili",
+   "order": 4,
+   "count": 14,
+   "books": [
+    {
+     "key": "bx1",
+     "label": "必修第一册",
+     "short": "必修一",
+     "order": 1,
+     "count": 6
+    },
+    {
+     "key": "xxbx1",
+     "label": "选择性必修一册",
+     "short": "选必一",
+     "order": 11,
+     "count": 7
+    },
+    {
+     "key": "xxbx3",
+     "label": "选择性必修三册",
+     "short": "选必三",
+     "order": 13,
+     "count": 1
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,101 @@
+---
+import Base from '../../layouts/Base.astro';
+import Card from '../../components/Card.astro';
+import lessons from '../../data/lessons.json';
+import meta from '../../data/site-meta.json';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+
+export function getStaticPaths() {
+  return meta.subjects.map(s => ({ params: { subject: s.slug }, props: { subject: s } }));
+}
+
+const { subject } = Astro.props as any;
+const thumbDir = join(process.cwd(), 'public/thumbs');
+const hasThumb = (slug: string) => existsSync(join(thumbDir, `${slug}.webp`));
+
+const inSubj = lessons.filter((l: any) => l.subject === subject.name);
+const books = subject.books.map((b: any) => {
+  const inBook = inSubj.filter((l: any) => l.bookKey === b.key);
+  const chapKeys = [...new Set(inBook.map((l: any) => l.chapterKey))]
+    .sort((a: any, b: any) => parseInt(a.slice(2)) - parseInt(b.slice(2)));
+  return {
+    ...b,
+    chapters: chapKeys.map((ck: any) => ({
+      key: ck,
+      label: inBook.find((l: any) => l.chapterKey === ck)!.chapterLabel,
+      items: inBook.filter((l: any) => l.chapterKey === ck)
+    }))
+  };
+});
+
+const subjectColor: Record<string, string> = {
+  物理: 'var(--s-wuli)', 化学: 'var(--s-huaxue)', 生物: 'var(--s-shengwu)', 地理: 'var(--s-dili)'
+};
+---
+
+<Base title={`${subject.name}课件`} description={`人教版高中${subject.name}交互课件，共 ${subject.count} 门。`}>
+  <div class="filterbar">
+    <span class="crumb"><a href="/">全部</a> / <b>{subject.name}</b></span>
+    <div class="chips">
+      <a class="chip" href="/">全部 <span class="n">{lessons.length}</span></a>
+      {meta.subjects.map((s: any) => (
+        <a class="chip" href={`/${s.slug}/`} aria-current={s.slug === subject.slug ? 'page' : undefined}>
+          {s.name} <span class="n">{s.count}</span>
+        </a>
+      ))}
+    </div>
+    <div class="filter-right">
+      <span class="stat"><b>{subject.count}</b> 门 · <b>{books.length}</b> 册</span>
+    </div>
+  </div>
+
+  <main>
+    <div class="lede">
+      <h1 style={`border-left:3px solid ${subjectColor[subject.name]};padding-left:12px`}>{subject.name}</h1>
+      <p>{books.map((b: any) => b.label).join(' · ')}，共 {subject.count} 门课件</p>
+    </div>
+
+    {books.map((b: any) => (
+      <section>
+        <div class="sec-head" id={b.key}>
+          <h2>{b.label}</h2>
+          <span class="num">{String(b.count).padStart(2, '0')}</span>
+          <span class="hint">{b.chapters.length} 个章节</span>
+        </div>
+
+        {b.chapters.map((c: any) => (
+          <div class="chapter-row">
+            <div class="chapter-rail">
+              <span class="cr-label">{c.label}</span>
+              <span class="cr-count">{c.items.length} 门</span>
+            </div>
+            <div class={`chapter-cards${c.items.length <= 2 ? ' sparse' : ''}`}>
+              {c.items.map((l: any) => (
+                <Card
+                  slug={l.slug}
+                  title={l.title}
+                  mainline={l.mainline}
+                  subject={l.subject}
+                  bookShort={l.bookShort}
+                  chapterLabel={l.chapterLabel}
+                  section={l.section}
+                  sectionTitle={l.sectionTitle}
+                  thumb={hasThumb(l.slug) ? `/thumbs/${l.slug}.webp` : undefined}
+                />
+              ))}
+            </div>
+          </div>
+        ))}
+      </section>
+    ))}
+  </main>
+</Base>
+
+<style>
+  @media(max-width:900px){
+    .chapter-row{grid-template-columns:1fr;gap:10px;padding:14px 0}
+    .chapter-rail{display:flex;align-items:baseline;gap:8px}
+    .chapter-rail .cr-count{margin-top:0}
+  }
+</style>

@@ -1,0 +1,118 @@
+---
+import Base from '../../layouts/Base.astro';
+import lessons from '../../data/lessons.json';
+import meta from '../../data/site-meta.json';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+
+export function getStaticPaths() {
+  return lessons.map((l: any) => ({ params: { slug: l.slug }, props: { lesson: l } }));
+}
+
+const { lesson } = Astro.props as any;
+const l = lesson;
+
+const thumbPath = join(process.cwd(), 'public/thumbs', `${l.slug}.webp`);
+const hasThumb = existsSync(thumbPath);
+
+// 同章其他课；若本章只有这一门，退回显示同册其他课
+const chapterSiblings = lessons.filter((x: any) =>
+  x.subject === l.subject && x.bookKey === l.bookKey && x.chapterKey === l.chapterKey && x.slug !== l.slug
+);
+const bookSiblings = lessons.filter((x: any) =>
+  x.subject === l.subject && x.bookKey === l.bookKey && x.slug !== l.slug
+);
+const useChapter = chapterSiblings.length > 0;
+const related = useChapter ? chapterSiblings : bookSiblings.slice(0, 6);
+const relatedLabel = useChapter ? '本章其他课件' : '同册其他课件';
+
+const chapNo = l.chapterLabel.replace('第', '').replace('章', '');
+const figNo = `${chapNo}-${l.section ? String(l.section).padStart(2, '0') : '00'}`;
+const sizeMB = (l.bytes / 1024 / 1024).toFixed(2);
+---
+
+<Base title={l.title} description={l.mainline || `${l.subject} · ${l.bookLabel} · ${l.chapterLabel}`} noFooter>
+  <div class="detail-main">
+    <div class="detail-stage">
+      <div class="stage-toolbar">
+        <span class="crumb" style="margin-right:6px">
+          <a href={`/${l.subjectSlug}/`}>{l.subject}</a> / {l.bookShort} / <b>{l.chapterLabel}</b>
+        </span>
+        <span class="st-title">FIG. {figNo}</span>
+        <a class="btn-line" href={`/models/${l.slug}.html`} target="_blank" rel="noopener">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+            <path d="M6 2H2v4M10 14h4v-4M2 2l4.5 4.5M14 14L9.5 9.5"/>
+          </svg>
+          全屏
+        </a>
+        <a class="btn-solid" href={`/models/${l.slug}.html`} download={`${l.slug}.html`}>
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+            <path d="M8 2v9M4.5 8L8 11.5 11.5 8M2 13.5h12"/>
+          </svg>
+          下载
+        </a>
+      </div>
+      <div class="frame-wrap">
+        <div class="frame-plate">
+          <iframe
+            src={`/models/${l.slug}.html`}
+            title={`${l.title} 交互演示`}
+            scrolling="no"
+            allow="fullscreen"
+          ></iframe>
+        </div>
+        <div class="frame-fig">
+          <b>FIG. {figNo}</b>
+          <span>{l.title}</span>
+          <span style="color:var(--ink-4)">—</span>
+          <span>{l.textbook.split('（')[0]}</span>
+        </div>
+      </div>
+      <div class="frame-note">
+        <span>拖动 / 滚轮可旋转视角</span>
+        <span style="color:var(--ink-4)">·</span>
+        <span>{l.steps} 步 · {l.quiz} 道检测</span>
+        <span style="color:var(--ink-4)">·</span>
+        <span>{sizeMB} MB 单文件，可离线运行</span>
+      </div>
+    </div>
+
+    <aside class="detail-side">
+      <h1>{l.title}</h1>
+      {l.mainline && <p class="sub">{l.mainline}</p>}
+
+      <dl class="meta-list">
+        <div class="meta-row"><dt>科目</dt><dd>{l.subject}</dd></div>
+        <div class="meta-row"><dt>教材</dt><dd>人教版 · {l.bookLabel}</dd></div>
+        <div class="meta-row"><dt>章节</dt><dd>{l.chapterLabel}{l.section ? ` 第 ${l.section} 节` : ''}</dd></div>
+        {l.type && <div class="meta-row"><dt>类型</dt><dd>{l.type}</dd></div>}
+        <div class="meta-row"><dt>来源</dt><dd class="tag">铜匠实验室</dd></div>
+        <div class="meta-row"><dt>文件</dt><dd class="tag">{l.slug}.html · {sizeMB} MB</dd></div>
+      </dl>
+
+      <h3>教材定位</h3>
+      <p class="body">{l.textbook}</p>
+
+      <h3>{relatedLabel}</h3>
+      <nav class="chapter-nav">
+        {related.map((s: any) => (
+          <a href={`/m/${s.slug}/`}>
+            <span class="cn">{s.chapterLabel.replace('第', '').replace('章', '')}-{s.section ? String(s.section).padStart(2,'0') : '00'}</span>
+            {s.title}
+          </a>
+        ))}
+        {related.length === 0 && (
+          <a href={`/${l.subjectSlug}/`}><span class="cn">—</span>该册暂无其他课件</a>
+        )}
+      </nav>
+
+      <div class="license">
+        <span class="lic-k">许可</span>
+        <span class="lic-v">
+          内容来自 <a href="https://lab.tongjiang.app" target="_blank" rel="noopener">铜匠实验室</a>，
+          以 <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a> 分享，仅限非商业教学用途。
+        </span>
+      </div>
+    </aside>
+  </div>
+</Base>

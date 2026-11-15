@@ -1,0 +1,101 @@
+---
+import Base from '../layouts/Base.astro';
+import Card from '../components/Card.astro';
+import lessons from '../data/lessons.json';
+import meta from '../data/site-meta.json';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+
+const thumbDir = join(process.cwd(), 'public/thumbs');
+const hasThumb = (slug: string) => existsSync(join(thumbDir, `${slug}.webp`));
+
+// 首页展示：每个科目各取几门，组成「新入库」序列
+const featured = [];
+for (const s of meta.subjects) {
+  const list = lessons.filter(l => l.subject === s.name);
+  featured.push(...list.slice(0, 2));
+}
+const rest = lessons.filter(l => !featured.includes(l));
+
+const subjectColor = { 物理: 'var(--s-wuli)', 化学: 'var(--s-huaxue)', 生物: 'var(--s-shengwu)', 地理: 'var(--s-dili)' };
+---
+
+<Base>
+  <div class="filterbar">
+    <span class="crumb">人教版 / <b>全部年级</b></span>
+    <div class="chips">
+      <a class="chip" href="/" aria-current="page">全部 <span class="n">{lessons.length}</span></a>
+      {meta.subjects.map(s => (
+        <a class="chip" href={`/${s.slug}/`}>{s.name} <span class="n">{s.count}</span></a>
+      ))}
+    </div>
+    <div class="filter-right">
+      <span class="stat"><b>{meta.lessonCount}</b> 门课件 · <b>{meta.subjects.length}</b> 个科目 · <b>{meta.stepCount}</b> 步</span>
+    </div>
+  </div>
+
+  <main>
+    <div class="lede">
+      <h1>高中交互模型库</h1>
+      <p>按人教版教材章节整理，打开即演示，可下载用于课堂</p>
+    </div>
+
+    <div class="sec-head">
+      <h2>按科目浏览</h2>
+      <span class="num">{meta.subjects.length}</span>
+    </div>
+    <div class="subject-row">
+      {meta.subjects.map((s, i) => (
+        <a class="subject-card" href={`/${s.slug}/`}>
+          <span class="sc-no">0{i + 1}</span>
+          <span class="sc-name">{s.name}</span>
+          <span class="sc-meta">{s.count} 门课件</span>
+          <span class="sc-books">{s.books.map(b => b.short).join(' · ')}</span>
+        </a>
+      ))}
+    </div>
+
+    <div class="sec-head">
+      <h2>最近入库</h2>
+      <span class="num">{String(featured.length).padStart(2, '0')}</span>
+      <span class="hint">每个科目各取两门</span>
+      <a class="more" href="/all/">查看全部 {lessons.length} 门 →</a>
+    </div>
+    <div class="grid">
+      {featured.map(l => (
+        <Card
+          slug={l.slug}
+          title={l.title}
+          mainline={l.mainline}
+          subject={l.subject}
+          bookShort={l.bookShort}
+          chapterLabel={l.chapterLabel}
+          section={l.section}
+          sectionTitle={l.sectionTitle}
+          thumb={hasThumb(l.slug) ? `/thumbs/${l.slug}.webp` : undefined}
+        />
+      ))}
+    </div>
+
+    <div class="sec-head">
+      <h2>全部课件</h2>
+      <span class="num">{String(rest.length).padStart(2, '0')}</span>
+      <a class="more" href="/all/">按章节浏览 →</a>
+    </div>
+    <div class="grid">
+      {rest.map(l => (
+        <Card
+          slug={l.slug}
+          title={l.title}
+          mainline={l.mainline}
+          subject={l.subject}
+          bookShort={l.bookShort}
+          chapterLabel={l.chapterLabel}
+          section={l.section}
+          sectionTitle={l.sectionTitle}
+          thumb={hasThumb(l.slug) ? `/thumbs/${l.slug}.webp` : undefined}
+        />
+      ))}
+    </div>
+  </main>
+</Base>
