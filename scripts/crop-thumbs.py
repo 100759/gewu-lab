@@ -8,7 +8,7 @@ from pathlib import Path
 import sys
 
 ROOT = Path(__file__).resolve().parent.parent
-SRC = ROOT / "public" / "thumbs-src"
+SRC = ROOT / "thumbs-src"
 OUT = ROOT / "public" / "thumbs"
 OUT.mkdir(parents=True, exist_ok=True)
 SRC.mkdir(parents=True, exist_ok=True)
