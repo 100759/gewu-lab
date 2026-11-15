@@ -23,3 +23,6 @@ thumbs-src/
 # editor
 .vscode/
 .idea/
+
+# EdgeOne CLI 本地关联信息
+.edgeone/
