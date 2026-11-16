@@ -1,8 +1,11 @@
 ---
 import Base from '../layouts/Base.astro';
+
+const FORM_URL = 'https://docs.qq.com/form/page/DU2psb3ZzUkZNS3hu';
+const FALLBACK_MAIL = 'mail@fuheng.vip';
 ---
 
-<Base title="投稿模型" description="向格物模型库投稿一个高中交互课件。">
+<Base title="投稿模型" description="向格物模型库投稿一个高中交互课件：填一张表就能交，审核通过后进目录。">
   <div class="filterbar">
     <span class="crumb"><a href="/">首页</a> / <b>投稿</b></span>
     <div class="chips"></div>
@@ -11,144 +14,205 @@ import Base from '../layouts/Base.astro';
 
   <main>
     <div class="submit-page">
-      <div>
+      <div class="sub-main">
         <div class="submit-intro">
           <h1>投稿一个模型</h1>
           <p class="intro">
-            提交后由管理员审核，通过后放入正式库，自动生成演示页与下载地址。
-            课件请尽量做成单个 HTML 文件（样式和脚本内联），这样能离线运行、也方便下载。
+            课件放上来，审核通过就进目录——按科目、册、章排好，做成能直接投到教室大屏上的样子，作者署名保留。
+            有现成的、自己做的、看到别人做得好想推荐的，都欢迎。
           </p>
         </div>
 
-        <form class="form-card" id="submitForm" novalidate>
-        <div class="field">
-          <label for="f-name">模型名称 <span class="req">*</span></label>
-          <input id="f-name" name="name" type="text" placeholder="例如：单摆的周期" required />
-        </div>
-
-        <div class="field-row">
-          <div class="field">
-            <label for="f-subj">科目 <span class="req">*</span></label>
-            <select id="f-subj" name="subject">
-              <option>物理</option><option>化学</option><option>生物</option><option>地理</option>
-            </select>
+        <div class="cta-card">
+          <div class="cc-body">
+            <span class="cc-k">投稿表单</span>
+            <h2>Html 交互模型投稿</h2>
+            <p class="cc-d">填表大概两分钟。课件可以直接传附件，文件大就贴网盘或直链。</p>
+            <div class="cc-acts">
+              <a class="btn-solid cc-go" href={FORM_URL} target="_blank" rel="noopener">
+                打开投稿表单
+                <span aria-hidden="true">→</span>
+              </a>
+              <button class="btn-line" type="button" id="copyLink">复制表单链接</button>
+            </div>
           </div>
-          <div class="field">
-            <label for="f-book">教材 <span class="req">*</span></label>
-            <select id="f-book" name="book">
-              <option>必修第一册</option><option>必修第二册</option><option>必修第三册</option>
-              <option>选择性必修第一册</option><option>选择性必修第二册</option><option>选择性必修第三册</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="f-ch">章节</label>
-            <input id="f-ch" name="chapter" type="text" placeholder="第二章 第3节" />
+          <div class="cc-qr">
+            <img src="/img/submit-qr.svg" width="164" height="164" alt="投稿表单二维码" loading="lazy" />
+            <span>手机扫码填写</span>
           </div>
         </div>
 
-        <div class="field">
-          <label for="f-desc">一句话说明</label>
-          <textarea id="f-desc" name="desc" placeholder="这个模型演示什么？适合哪一节讲？"></textarea>
-        </div>
-
-        <div class="field">
-          <label>模型文件</label>
-          <div class="upload" id="uploadBox" tabindex="0" role="button">
-            <div class="u-main">点击选择文件，或拖拽到这里</div>
-            <div class="u-hint">HTML 单文件 · 不超过 25 MB</div>
+        <div class="notes">
+          <div class="note-row">
+            <span class="note-no">01</span>
+            <div>
+              <div class="note-t">最好是单个 HTML 文件</div>
+              <div class="note-d">样式和脚本都内联，下载后双击就能跑，不用联网也不用装东西。多文件的 3D 应用也行，打包成压缩包，附一句怎么打开。</div>
+            </div>
           </div>
-          <input id="fileInput" type="file" accept=".html" hidden />
+          <div class="note-row">
+            <span class="note-no">02</span>
+            <div>
+              <div class="note-t">说清教材定位</div>
+              <div class="note-d">哪一科、哪一册、第几章第几节，这个模型是演示哪个点的。定位准，老师才找得到。</div>
+            </div>
+          </div>
+          <div class="note-row">
+            <span class="note-no">03</span>
+            <div>
+              <div class="note-t">来源和授权写明白</div>
+              <div class="note-d">自己做的直接说；转载的注明原作者和出处；用了别人的模型、贴图、音频，标一下来自哪、能不能用。</div>
+            </div>
+          </div>
         </div>
 
-        <div class="or-line">或提供下载链接</div>
+        <p class="fallback">
+          表单打不开，或者文件太大？发到
+          <a href={`mailto:${FALLBACK_MAIL}?subject=Html%20交互模型投稿`}>{FALLBACK_MAIL}</a>，
+          附件或链接都行。
+        </p>
 
-        <div class="field">
-          <label for="f-link">外部链接</label>
-          <input id="f-link" name="link" type="text" placeholder="https://…（大文件请填网盘或直链）" />
-        </div>
-
-        <div class="field">
-          <label for="f-contact">联系方式（选填）</label>
-          <input id="f-contact" name="contact" type="text" placeholder="邮箱或微信，用于审核结果反馈" />
-        </div>
-
-        <div class="form-foot">
-          <span class="form-note">
-            提交即表示同意本站按 CC BY-NC 4.0 协议分享；第三方资源请注明出处与授权。
-          </span>
-          <button class="btn-solid" type="submit">提交审核</button>
-        </div>
-      </form>
+        <p class="terms">
+          提交即表示同意本站按「开源、免费、公益」的方式分享，并允许为排版做必要调整；如权利人认为不宜收录，可随时联系下架。
+        </p>
       </div>
 
       <aside class="submit-steps">
         <div class="submit-step">
           <span class="ss-no">01</span>
           <div class="ss-body">
-            <div class="ss-t">提交课件</div>
-            <div class="ss-d">填名称、科目、教材与章节，上传 HTML 文件或提供下载链接。</div>
+            <div class="ss-t">填表交稿</div>
+            <div class="ss-d">名称、科目、教材章节，加上课件文件或下载链接。</div>
           </div>
         </div>
         <div class="submit-step">
           <span class="ss-no">02</span>
           <div class="ss-body">
             <div class="ss-t">人工审核</div>
-            <div class="ss-d">检查课件能否正常运行、教材定位是否准确、来源与授权是否清楚。</div>
+            <div class="ss-d">能不能跑起来、教学定位准不准、来源与授权清不清楚。</div>
           </div>
         </div>
         <div class="submit-step">
           <span class="ss-no">03</span>
           <div class="ss-body">
-            <div class="ss-t">上线</div>
-            <div class="ss-d">通过后放入正式库，自动生成演示页、缩略图与下载地址。</div>
-          </div>
-        </div>
-        <div class="submit-step">
-          <span class="ss-no">04</span>
-          <div class="ss-body">
-            <div class="ss-t">署名</div>
-            <div class="ss-d">课件会标注作者信息。默认按 CC BY-NC 4.0 分享，仅限非商业教学用途。</div>
+            <div class="ss-t">上线署名</div>
+            <div class="ss-d">进目录，生成演示页与缩略图，作者与出处跟着课件走。</div>
           </div>
         </div>
       </aside>
     </div>
   </main>
 
-  <div class="toast" id="toast">已提交，等待审核</div>
+  <div class="toast" id="toast">链接已复制</div>
 
   <script>
-    const form = document.getElementById('submitForm');
+    const btn = document.getElementById('copyLink');
     const toast = document.getElementById('toast');
-    const box = document.getElementById('uploadBox');
-    const fileInput = document.getElementById('fileInput');
-    const nameInput = document.getElementById('f-name');
+    const FORM_URL_JS = 'https://docs.qq.com/form/page/DU2psb3ZzUkZNS3hu';
 
-    box?.addEventListener('click', () => fileInput.click());
-    box?.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
-    });
-    fileInput?.addEventListener('change', () => {
-      const f = fileInput.files?.[0];
-      if (f) {
-        const main = box.querySelector('.u-main');
-        main.textContent = `已选择：${f.name}`;
-        box.style.borderColor = 'var(--ink-3)';
+    btn?.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(FORM_URL_JS);
+      } catch {
+        const tmp = document.createElement('textarea');
+        tmp.value = FORM_URL_JS;
+        document.body.appendChild(tmp);
+        tmp.select();
+        document.execCommand('copy');
+        tmp.remove();
       }
+      toast?.classList.add('show');
+      setTimeout(() => toast?.classList.remove('show'), 2000);
     });
-
-    form?.addEventListener('submit', (e) => {
-      e.preventDefault();
-      if (!nameInput.value.trim()) {
-        nameInput.style.borderColor = 'var(--red)';
-        nameInput.focus();
-        return;
-      }
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 2800);
-      form.reset();
-      box.querySelector('.u-main').textContent = '点击选择文件，或拖拽到这里';
-      box.style.borderColor = '';
-    });
-    nameInput?.addEventListener('input', () => { nameInput.style.borderColor = ''; });
   </script>
 </Base>
+
+<style>
+  .submit-page{
+    display:grid;grid-template-columns:minmax(0,1fr) 320px;
+    gap:56px;align-items:start;
+    padding:34px 40px 64px;max-width:1120px;
+  }
+
+  .submit-intro h1{
+    font-family:var(--serif);font-size:30px;font-weight:600;letter-spacing:.04em;
+    margin-bottom:12px;
+  }
+  .intro{font-size:14px;color:var(--ink-3);line-height:1.9;max-width:640px}
+
+  /* ---------- 投递卡 ---------- */
+  .cta-card{
+    display:grid;grid-template-columns:minmax(0,1fr) auto;
+    gap:28px;align-items:center;
+    border:1px solid var(--line);background:var(--paper-2);
+    padding:24px 26px;margin-top:26px;
+  }
+  .cc-k{
+    font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--ink-4);
+    display:block;margin-bottom:8px;
+  }
+  .cc-body h2{
+    font-family:var(--serif);font-size:20px;font-weight:600;margin-bottom:6px;
+  }
+  .cc-d{font-size:13px;color:var(--ink-3);line-height:1.8;margin-bottom:16px;max-width:420px}
+  .cc-acts{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .cc-go{gap:8px;text-decoration:none}
+
+  .cc-qr{
+    display:flex;flex-direction:column;align-items:center;gap:7px;
+    padding-left:24px;border-left:1px solid var(--line);
+  }
+  .cc-qr img{width:164px;height:164px;display:block}
+  .cc-qr span{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ink-4)}
+
+  /* ---------- 须知 ---------- */
+  .notes{margin-top:30px;border-top:1px solid var(--line)}
+  .note-row{
+    display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;
+    padding:16px 0;border-bottom:1px solid var(--line);
+  }
+  .note-no{font-family:var(--mono);font-size:10.5px;color:var(--ink-4);letter-spacing:.1em}
+  .note-t{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:5px}
+  .note-d{font-size:12.5px;color:var(--ink-3);line-height:1.85}
+
+  .fallback{
+    margin-top:26px;font-size:13px;color:var(--ink-2);line-height:1.8;
+  }
+  .fallback a{
+    color:var(--ink);text-decoration:none;border-bottom:1px solid var(--ink-3);padding-bottom:1px;
+    transition:color .16s,border-color .16s;
+  }
+  .fallback a:hover{color:var(--red);border-color:var(--red)}
+  .terms{
+    margin-top:14px;font-size:11.5px;color:var(--ink-4);line-height:1.85;font-family:var(--mono);
+    letter-spacing:.02em;
+  }
+
+  /* ---------- 流程侧栏 ---------- */
+  .submit-steps{border-left:1px solid var(--line);padding-left:26px}
+  .submit-step{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}
+  .submit-step:last-child{border-bottom:0}
+  .ss-no{font-family:var(--mono);font-size:10.5px;color:var(--ink-4);letter-spacing:.1em;padding-top:3px}
+  .ss-t{font-size:13.5px;font-weight:500;margin-bottom:3px}
+  .ss-d{font-size:12px;color:var(--ink-3);line-height:1.8}
+
+  .toast{
+    position:fixed;left:50%;bottom:32px;transform:translate(-50%,12px);
+    background:var(--ink);color:var(--paper);font-size:13px;
+    padding:10px 18px;border-radius:2px;opacity:0;pointer-events:none;
+    transition:opacity .2s,transform .2s;z-index:5;
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  @media(max-width:900px){
+    .submit-page{grid-template-columns:1fr;gap:32px;padding:26px 20px 48px}
+    .submit-steps{border-left:0;border-top:1px solid var(--line);padding-left:0;padding-top:8px}
+    .cta-card{grid-template-columns:1fr;gap:20px}
+    .cc-qr{
+      flex-direction:row;align-items:center;gap:14px;
+      padding-left:0;border-left:0;border-top:1px solid var(--line);padding-top:18px;
+    }
+    .cc-qr img{width:120px;height:120px}
+    .submit-intro h1{font-size:26px}
+  }
+</style>
