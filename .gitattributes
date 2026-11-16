@@ -1,0 +1,10 @@
+# 54 门 3D 交互课件来自铜匠实验室（CC BY-NC 4.0），
+# 单文件内联 Three.js + 顶点数据，每个约 5000 行。
+# 这些是第三方数据资产而非项目源码，标记为 vendored 让 GitHub Linguist 跳过，
+# 这样仓库语言统计才会正确显示 Astro / TypeScript / CSS。
+public/models/*.html linguist-vendored=true
+
+# 原始截图和裁切脚本也不计入语言统计
+public/thumbs/*.webp linguist-vendored=true
+scripts/*.py linguist-vendored=true
+scripts/*.sh linguist-vendored=true
