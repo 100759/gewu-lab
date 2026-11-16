@@ -16,7 +16,8 @@ const SUBJECTS = {
   化学: { slug: 'huaxue', order: 2 },
   生物: { slug: 'shengwu', order: 3 },
   地理: { slug: 'dili', order: 4 },
-  历史: { slug: 'lishi', order: 5 }
+  历史: { slug: 'lishi', order: 5 },
+  数学: { slug: 'shuxue', order: 6 }
 };
 
 /* ---------- 教材（册）---------- */
@@ -181,7 +182,7 @@ const subjects = Object.entries(SUBJECTS).map(([name, cfg]) => {
       return { key: k, label: b.bookLabel, short: b.bookShort, order: b.bookOrder, count: list.filter(l => l.bookKey === k).length };
     }).sort((x, y) => x.order - y.order)
   };
-}).filter(s => s.count > 0).sort((a, b) => a.order - b.order);
+}).sort((a, b) => a.order - b.order);
 
 /* ---------- 写出 ---------- */
 const outDir = join(ROOT, 'src/data');

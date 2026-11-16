@@ -2,7 +2,7 @@
  "nameZh": "铜匠实验室",
  "name": "Tongjiang Lab",
  "site": "https://lab.tongjiang.app",
- "descriptionZh": "开源、免费、公益的高中交互式 3D 教学模型库，覆盖物理、化学、生物、地理、历史。每门课都能在浏览器里直接演示。",
+ "descriptionZh": "开源、免费、公益的高中交互式 3D 教学模型库，覆盖物理、化学、生物、地理、历史、数学。每门课都能在浏览器里直接演示。",
  "license": "CC BY-NC 4.0",
  "licenseUrl": "https://creativecommons.org/licenses/by-nc/4.0/",
  "textbookEdition": "人教版 2019（普通高中课程标准）",
@@ -146,6 +146,13 @@
      "count": 1
     }
    ]
+  },
+  {
+   "name": "数学",
+   "slug": "shuxue",
+   "order": 6,
+   "count": 0,
+   "books": []
   }
  ]
 }

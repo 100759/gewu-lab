@@ -2,13 +2,13 @@
 import Base from '../layouts/Base.astro';
 import meta from '../data/site-meta.json';
 
-const subjectSlugs: Record<string, string> = { 物理: 'wuli', 化学: 'huaxue', 生物: 'shengwu', 地理: 'dili' };
+const subjectSlugs: Record<string, string> = { 物理: 'wuli', 化学: 'huaxue', 生物: 'shengwu', 地理: 'dili', 历史: 'lishi', 数学: 'shuxue' };
 const subjects = [...meta.subjects].sort((a, b) => a.order - b.order);
 ---
 
 <Base
   noFooter
-  description={`全部开源、纯公益的高中 3D 交互课件库，共 ${meta.lessonCount} 门（物理、化学、生物、地理、历史），打开即演示，可离线下载。`}
+  description={`全部开源、纯公益的高中 3D 交互课件库，共 ${meta.lessonCount} 门（物理、化学、生物、地理、历史、数学），打开即演示，可离线下载。`}
 >
   <div class="land">
 
@@ -33,15 +33,22 @@ const subjects = [...meta.subjects].sort((a, b) => a.order - b.order);
         </div>
       </div>
 
-      <figure class="specimen">
-        <img
-          src="/img/cell-model.webp"
-          width="920"
-          height="835"
-          alt="动物细胞三维模型"
-          decoding="async"
-          fetchpriority="high"
-        />
+      <figure class="specimen" data-scene>
+        <div class="scene-box">
+          <img
+            class="poster"
+            src="/img/cell-model.webp"
+            width="920"
+            height="835"
+            alt="动物细胞三维模型"
+            decoding="async"
+            fetchpriority="high"
+          />
+          <canvas
+            class="scene-canvas"
+            aria-label="动物细胞三维模型，可用鼠标拖动旋转"
+          ></canvas>
+        </div>
         <figcaption class="spec-cap">
           <b>模型示意 · 动物细胞</b>
           真核细胞 · 异养生物 · 直径 10–30 微米
@@ -54,7 +61,7 @@ const subjects = [...meta.subjects].sort((a, b) => a.order - b.order);
         <a class="subj" href={`/${subjectSlugs[s.name]}/`}>
           <span class="subj-no">0{i + 1}</span>
           <span class="subj-name">{s.name}</span>
-          <span class="subj-cnt">{s.count} 门</span>
+          <span class="subj-cnt">{s.count > 0 ? `${s.count} 门` : '待收录'}</span>
         </a>
       ))}
     </nav>
@@ -138,9 +145,18 @@ const subjects = [...meta.subjects].sort((a, b) => a.order - b.order);
     background:radial-gradient(50% 50% at 50% 50%,rgba(28,27,24,.13),rgba(28,27,24,0) 72%);
     filter:blur(14px);
   }
-  .specimen img{
-    position:relative;width:100%;height:auto;
+  .scene-box{position:relative;width:100%;aspect-ratio:920/835}
+  .specimen .poster{
+    position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
+    transition:opacity .55s ease;
   }
+  .scene-canvas{
+    position:absolute;inset:0;width:100%;height:100%;display:block;
+    opacity:0;transition:opacity .55s ease;cursor:grab;touch-action:pan-y;
+  }
+  .scene-canvas:active{cursor:grabbing}
+  .specimen.is-live .poster{opacity:0}
+  .specimen.is-live .scene-canvas{opacity:1}
   .spec-cap{
     position:relative;margin-top:2px;
     font-family:var(--mono);font-size:10px;line-height:1.7;
@@ -150,7 +166,7 @@ const subjects = [...meta.subjects].sort((a, b) => a.order - b.order);
 
   /* ---------- 科目索引 ---------- */
   .subjects{
-    flex:0 0 auto;display:grid;grid-template-columns:repeat(5,1fr);
+    flex:0 0 auto;display:grid;grid-template-columns:repeat(6,1fr);
     border-top:1px solid var(--line);margin:0 40px;
   }
   .subj{
@@ -197,12 +213,12 @@ const subjects = [...meta.subjects].sort((a, b) => a.order - b.order);
     .figures{max-width:none;margin-top:20px}
     .acts{margin-top:20px;gap:16px}
     .specimen{width:100%;max-width:340px;margin:12px auto 0}
+    /* 两列六格：左列贴齐、右列留缩进，除最后一行外都有横线 */
     .subjects{grid-template-columns:repeat(2,1fr);margin:0 20px}
     .subj{padding:14px 0 12px 18px}
-    .subj:nth-child(2){padding-left:18px}
-    .subj:nth-child(1),.subj:nth-child(3){padding-left:0}
-    .subj:nth-child(1),.subj:nth-child(2){border-bottom:1px solid var(--line)}
-    .subj:nth-child(2),.subj:nth-child(4){border-right:0}
+    .subj:nth-child(odd){padding-left:0}
+    .subj:nth-child(even){border-right:0}
+    .subj:not(:nth-last-child(-n+2)){border-bottom:1px solid var(--line)}
     .colophon{padding:14px 20px 18px;font-size:11.5px;gap:10px}
     .c-right{margin-left:0;text-align:left}
   }
@@ -213,3 +229,119 @@ const subjects = [...meta.subjects].sort((a, b) => a.order - b.order);
     .specimen{max-width:300px}
   }
 </style>
+<script>
+  import * as THREE from 'three';
+  import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+  import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
+
+  const wrap = document.querySelector('.specimen[data-scene]') as HTMLElement | null;
+  const boxEl = wrap?.querySelector('.scene-box') as HTMLElement | null;
+  const canvas = wrap?.querySelector('canvas') as HTMLCanvasElement | null;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const narrow = matchMedia('(max-width: 640px)').matches;
+
+  if (wrap && boxEl && canvas && !reduced && !narrow) build();
+
+  function build() {
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 400);
+
+    scene.add(new THREE.HemisphereLight(0xffffff, 0xe8e1d4, 1.25));
+    const key = new THREE.DirectionalLight(0xffffff, 1.45); key.position.set(2.6, 4.2, 3.4); scene.add(key);
+    const fill = new THREE.DirectionalLight(0xfff2e6, 0.75); fill.position.set(-3.6, 1.4, -2.2); scene.add(fill);
+    const rim = new THREE.DirectionalLight(0xffffff, 0.5); rim.position.set(0, -2.6, 2.4); scene.add(rim);
+
+    const pivot = new THREE.Group();
+    scene.add(pivot);
+
+    let ready = false;
+    let running = true;
+    // 剖面朝前的角度，模型绕这个角度小幅摆动，始终看得到细胞内部
+    let baseYaw = -1.58;
+    let swayPhase = 0.4;
+    let tiltX = 0, tiltY = 0, targetX = 0, targetY = 0;
+    let dragging = false, dragX = 0, last = 0;
+
+    const resize = () => {
+      const r = boxEl!.getBoundingClientRect();
+      if (!r.width || !r.height) return;
+      renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+      renderer.setSize(Math.round(r.width), Math.round(r.height), false);
+      camera.aspect = r.width / r.height;
+      camera.updateProjectionMatrix();
+    };
+    new ResizeObserver(resize).observe(boxEl!);
+    resize();
+
+    const loader = new GLTFLoader();
+    loader.setDRACOLoader(new DRACOLoader().setDecoderPath('/draco/'));
+    loader.load(
+      '/img/cell-scene.glb',
+      (gltf) => {
+        const model = gltf.scene;
+        model.traverse((o: any) => {
+          if (o.isMesh) {
+            o.material.side = THREE.DoubleSide;
+            o.material.roughness = Math.min(o.material.roughness ?? 0.85, 0.9);
+          }
+        });
+        const bb = new THREE.Box3().setFromObject(model);
+        const size = bb.getSize(new THREE.Vector3());
+        const center = bb.getCenter(new THREE.Vector3());
+        model.position.sub(center);
+        pivot.add(model);
+
+        const radius = 0.5 * Math.max(size.x, size.y, size.z);
+        const dist = (radius / Math.sin(THREE.MathUtils.degToRad(30) / 2)) * 1.04;
+        camera.position.set(0, 0, dist);
+        camera.lookAt(0, 0, 0);
+
+        ready = true;
+        requestAnimationFrame(() => wrap!.classList.add('is-live'));
+      },
+      undefined,
+      () => { /* 初始化失败就保留静态图 */ }
+    );
+
+    boxEl!.addEventListener('pointermove', (e) => {
+      const r = boxEl!.getBoundingClientRect();
+      const nx = (e.clientX - r.left) / r.width - 0.5;
+      const ny = (e.clientY - r.top) / r.height - 0.5;
+      if (dragging) {
+        baseYaw += (e.clientX - dragX) * 0.007;
+        dragX = e.clientX;
+        targetX = 0; targetY = 0;
+      } else {
+        targetY = nx * 1.15;
+        targetX = ny * -0.45;
+      }
+    });
+    boxEl!.addEventListener('pointerleave', () => { targetX = 0; targetY = 0; });
+    boxEl!.addEventListener('pointerdown', (e) => { dragging = true; dragX = e.clientX; canvas.setPointerCapture(e.pointerId); });
+    boxEl!.addEventListener('pointerup', (e) => { dragging = false; canvas.releasePointerCapture?.(e.pointerId); });
+
+    new IntersectionObserver((es) => {
+      running = es[0].isIntersecting;
+      if (running) { last = 0; requestAnimationFrame(tick); }
+    }, { threshold: 0.15 }).observe(boxEl!);
+
+    function tick(t: number) {
+      if (!running) return;
+      const dt = Math.min(48, last ? t - last : 16);
+      last = t;
+      if (ready) {
+        if (!dragging) swayPhase += dt * 0.0009;
+        const sway = Math.sin(swayPhase) * 0.34;
+        tiltY += (targetY - tiltY) * 0.07;
+        tiltX += (targetX - tiltX) * 0.07;
+        pivot.rotation.set(0.05 + tiltX, baseYaw + sway + tiltY, 0, 'YZX');
+        renderer.render(scene, camera);
+      }
+      requestAnimationFrame(tick);
+    }
+  }
+</script>

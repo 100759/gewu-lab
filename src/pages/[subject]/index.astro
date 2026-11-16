@@ -31,7 +31,7 @@ const books = subject.books.map((b: any) => {
 
 const subjectColor: Record<string, string> = {
   物理: 'var(--s-wuli)', 化学: 'var(--s-huaxue)', 生物: 'var(--s-shengwu)',
-  地理: 'var(--s-dili)', 历史: 'var(--s-lishi)'
+  地理: 'var(--s-dili)', 历史: 'var(--s-lishi)', 数学: 'var(--s-shuxue)'
 };
 ---
 
@@ -54,8 +54,22 @@ const subjectColor: Record<string, string> = {
   <main>
     <div class="lede">
       <h1 style={`border-left:3px solid ${subjectColor[subject.name]};padding-left:12px`}>{subject.name}</h1>
-      <p>{books.map((b: any) => b.label).join(' · ')}，共 {subject.count} 门课件</p>
+      <p>
+        {books.length > 0
+          ? `${books.map((b: any) => b.label).join(' · ')}，共 ${subject.count} 门课件`
+          : '这一科还在征集课件 · 有现成的交互演示欢迎投过来'}
+      </p>
     </div>
+
+    {books.length === 0 && (
+      <div class="empty-subj">
+        <span class="es-k">暂无课件</span>
+        <p class="es-line">
+          {subject.name}这一科还没有收录课件。有现成的 3D 交互演示，或者愿意做一版，都可以投过来，审核通过就放进目录。
+        </p>
+        <a class="es-go" href="/submit/">提交课件 <span aria-hidden="true">→</span></a>
+      </div>
+    )}
 
     {books.map((b: any) => (
       <section>
@@ -95,6 +109,24 @@ const subjectColor: Record<string, string> = {
 </Base>
 
 <style>
+  .empty-subj{
+    border-top:1px solid var(--line);padding:34px 0 40px;max-width:640px;
+  }
+  .es-k{
+    display:inline-block;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;
+    color:var(--ink-4);border:1px solid var(--line-2);padding:4px 8px;margin-bottom:16px;
+  }
+  .es-line{
+    font-size:14px;color:var(--ink-2);line-height:1.9;margin-bottom:18px;
+  }
+  .es-go{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:13px;color:var(--ink);text-decoration:none;
+    border-bottom:1px solid var(--ink-3);padding-bottom:2px;
+    transition:color .16s,border-color .16s;
+  }
+  .es-go:hover{color:var(--red);border-color:var(--red)}
+
   @media(max-width:900px){
     .chapter-row{grid-template-columns:1fr;gap:10px;padding:14px 0}
     .chapter-rail{display:flex;align-items:baseline;gap:8px}
