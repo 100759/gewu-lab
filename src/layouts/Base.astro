@@ -46,7 +46,7 @@ const path = Astro.url.pathname;
     <span class="brand-sub">INTERACTIVE&nbsp;LAB</span>
   </a>
   <nav class="nav" aria-label="科目">
-    <a href="/" aria-current={path === '/' ? 'page' : undefined}>全部</a>
+    <a href="/all/" aria-current={path.startsWith('/all') ? 'page' : undefined}>全部</a>
     {SUBJECTS.map(s => (
       <a href={`/${s.slug}/`} aria-current={path.startsWith(`/${s.slug}/`) ? 'page' : undefined}>{s.name}</a>
     ))}

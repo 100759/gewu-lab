@@ -31,7 +31,7 @@ const groups = meta.subjects.map(s => {
   <div class="filterbar">
     <span class="crumb">人教版 / <b>全部课件</b></span>
     <div class="chips">
-      <a class="chip" href="/" >全部 <span class="n">{lessons.length}</span></a>
+      <a class="chip" href="/all/" aria-current="page">全部 <span class="n">{lessons.length}</span></a>
       {meta.subjects.map(s => (
         <a class="chip" href={`/${s.slug}/`}>{s.name} <span class="n">{s.count}</span></a>
       ))}

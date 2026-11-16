@@ -36,9 +36,9 @@ const subjectColor: Record<string, string> = {
 
 <Base title={`${subject.name}课件`} description={`人教版高中${subject.name}交互课件，共 ${subject.count} 门。`}>
   <div class="filterbar">
-    <span class="crumb"><a href="/">全部</a> / <b>{subject.name}</b></span>
+    <span class="crumb"><a href="/all/">全部</a> / <b>{subject.name}</b></span>
     <div class="chips">
-      <a class="chip" href="/">全部 <span class="n">{lessons.length}</span></a>
+      <a class="chip" href="/all/">全部 <span class="n">{lessons.length}</span></a>
       {meta.subjects.map((s: any) => (
         <a class="chip" href={`/${s.slug}/`} aria-current={s.slug === subject.slug ? 'page' : undefined}>
           {s.name} <span class="n">{s.count}</span>

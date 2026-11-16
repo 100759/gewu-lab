@@ -1,101 +1,213 @@
 ---
 import Base from '../layouts/Base.astro';
-import Card from '../components/Card.astro';
-import lessons from '../data/lessons.json';
 import meta from '../data/site-meta.json';
-import { existsSync } from 'node:fs';
-import { join } from 'node:path';
 
-const thumbDir = join(process.cwd(), 'public/thumbs');
-const hasThumb = (slug: string) => existsSync(join(thumbDir, `${slug}.webp`));
-
-// 首页展示：每个科目各取几门，组成「新入库」序列
-const featured = [];
-for (const s of meta.subjects) {
-  const list = lessons.filter(l => l.subject === s.name);
-  featured.push(...list.slice(0, 2));
-}
-const rest = lessons.filter(l => !featured.includes(l));
-
-const subjectColor = { 物理: 'var(--s-wuli)', 化学: 'var(--s-huaxue)', 生物: 'var(--s-shengwu)', 地理: 'var(--s-dili)' };
+const subjectSlugs: Record<string, string> = { 物理: 'wuli', 化学: 'huaxue', 生物: 'shengwu', 地理: 'dili' };
+const subjects = [...meta.subjects].sort((a, b) => a.order - b.order);
 ---
 
-<Base>
-  <div class="filterbar">
-    <span class="crumb">人教版 / <b>全部年级</b></span>
-    <div class="chips">
-      <a class="chip" href="/" aria-current="page">全部 <span class="n">{lessons.length}</span></a>
-      {meta.subjects.map(s => (
-        <a class="chip" href={`/${s.slug}/`}>{s.name} <span class="n">{s.count}</span></a>
-      ))}
-    </div>
-    <div class="filter-right">
-      <span class="stat"><b>{meta.lessonCount}</b> 门课件 · <b>{meta.subjects.length}</b> 个科目 · <b>{meta.stepCount}</b> 步</span>
-    </div>
-  </div>
+<Base
+  noFooter
+  description={`全部开源、纯公益的高中 3D 交互课件库，共 ${meta.lessonCount} 门（物理、化学、生物、地理），打开即演示，可离线下载。`}
+>
+  <div class="land">
 
-  <main>
-    <div class="lede">
-      <h1>高中交互模型库</h1>
-      <p>按人教版教材章节整理，打开即演示，可下载用于课堂</p>
-    </div>
+    <section class="hero">
+      <div class="lead">
+        <div class="kicker">{meta.textbookEdition}</div>
+        <h1>高中交互模型库</h1>
+        <p class="claim">
+          3D 交互课件，按科目、册、章排好。打开即演示——不用装软件、不用联网，投到教室大屏上就能拖、能转、能算。每一步都不先给结论，等学生自己试出来。
+        </p>
 
-    <div class="sec-head">
-      <h2>按科目浏览</h2>
-      <span class="num">{meta.subjects.length}</span>
-    </div>
-    <div class="subject-row">
-      {meta.subjects.map((s, i) => (
-        <a class="subject-card" href={`/${s.slug}/`}>
-          <span class="sc-no">0{i + 1}</span>
-          <span class="sc-name">{s.name}</span>
-          <span class="sc-meta">{s.count} 门课件</span>
-          <span class="sc-books">{s.books.map(b => b.short).join(' · ')}</span>
+        <div class="figures">
+          <div class="fig"><b>{meta.lessonCount}</b><span>门课件</span></div>
+          <div class="fig"><b>{meta.stepCount}</b><span>步交互</span></div>
+          <div class="fig"><b>{meta.subjects.length}</b><span>个科目</span></div>
+        </div>
+
+        <div class="acts">
+          <a class="btn-go" href="/all/">进入课件目录 <span aria-hidden="true">→</span></a>
+          <a class="link-quiet" href="/about/">授权与使用说明</a>
+          <span class="note">全部可离线下载</span>
+        </div>
+      </div>
+
+      <figure class="specimen">
+        <img
+          src="/img/cell-model.webp"
+          width="920"
+          height="835"
+          alt="动物细胞三维模型"
+          decoding="async"
+          fetchpriority="high"
+        />
+        <figcaption class="spec-cap">
+          <b>模型示意 · 动物细胞</b>
+          真核细胞 · 异养生物 · 直径 10–30 微米
+        </figcaption>
+      </figure>
+    </section>
+
+    <nav class="subjects" aria-label="按科目浏览">
+      {subjects.map((s, i) => (
+        <a class="subj" href={`/${subjectSlugs[s.name]}/`}>
+          <span class="subj-no">0{i + 1}</span>
+          <span class="subj-name">{s.name}</span>
+          <span class="subj-cnt">{s.count} 门</span>
         </a>
       ))}
+    </nav>
+
+    <div class="colophon">
+      <div class="c-left">
+        全部课件开源 · 来自<a href={meta.site} target="_blank" rel="noopener">{meta.nameZh}</a> · <a href={meta.licenseUrl} target="_blank" rel="noopener">{meta.license}</a> · 非商业教学用途
+      </div>
+      <div class="c-right">
+        纯公益，永久免费，不接广告　·　<a href="/submit/">欢迎各位老师分享与投稿</a>
+      </div>
     </div>
 
-    <div class="sec-head">
-      <h2>最近入库</h2>
-      <span class="num">{String(featured.length).padStart(2, '0')}</span>
-      <span class="hint">每个科目各取两门</span>
-      <a class="more" href="/all/">查看全部 {lessons.length} 门 →</a>
-    </div>
-    <div class="grid">
-      {featured.map(l => (
-        <Card
-          slug={l.slug}
-          title={l.title}
-          mainline={l.mainline}
-          subject={l.subject}
-          bookShort={l.bookShort}
-          chapterLabel={l.chapterLabel}
-          section={l.section}
-          sectionTitle={l.sectionTitle}
-          thumb={hasThumb(l.slug) ? `/thumbs/${l.slug}.webp` : undefined}
-        />
-      ))}
-    </div>
-
-    <div class="sec-head">
-      <h2>全部课件</h2>
-      <span class="num">{String(rest.length).padStart(2, '0')}</span>
-      <a class="more" href="/all/">按章节浏览 →</a>
-    </div>
-    <div class="grid">
-      {rest.map(l => (
-        <Card
-          slug={l.slug}
-          title={l.title}
-          mainline={l.mainline}
-          subject={l.subject}
-          bookShort={l.bookShort}
-          chapterLabel={l.chapterLabel}
-          section={l.section}
-          sectionTitle={l.sectionTitle}
-          thumb={hasThumb(l.slug) ? `/thumbs/${l.slug}.webp` : undefined}
-        />
-      ))}
-    </div>
-  </main>
+  </div>
 </Base>
+
+<style>
+  .land{
+    min-height:calc(100vh - 64px);
+    display:flex;flex-direction:column;
+  }
+
+  /* ---------- 首屏 ---------- */
+  .hero{
+    flex:1;display:grid;
+    grid-template-columns:minmax(0,1fr) 460px;
+    gap:60px;align-items:center;
+    padding:24px 40px 0;
+  }
+  .lead{min-width:0}
+
+  .kicker{
+    font-family:var(--mono);font-size:11px;letter-spacing:.14em;
+    color:var(--ink-3);margin-bottom:16px;
+  }
+  h1{
+    font-family:var(--serif);font-size:50px;font-weight:600;
+    letter-spacing:.02em;line-height:1.15;
+  }
+  .claim{
+    font-size:14.5px;color:var(--ink-2);line-height:2;
+    margin-top:18px;max-width:580px;
+  }
+
+  .figures{
+    display:flex;margin-top:26px;border-top:1px solid var(--line);max-width:520px;
+  }
+  .fig{flex:1;padding-top:15px;border-right:1px solid var(--line)}
+  .fig + .fig{padding-left:22px}
+  .fig:last-child{border-right:0}
+  .fig b{
+    display:block;font-family:var(--mono);font-size:23px;font-weight:500;
+    line-height:1.2;letter-spacing:.02em;
+  }
+  .fig span{
+    display:block;font-family:var(--mono);font-size:10px;color:var(--ink-4);
+    letter-spacing:.11em;margin-top:3px;
+  }
+
+  .acts{display:flex;align-items:center;gap:14px 22px;margin-top:26px;flex-wrap:wrap}
+  .btn-go{
+    height:40px;padding:0 20px;border:1px solid var(--ink);background:var(--ink);
+    color:var(--paper);border-radius:2px;text-decoration:none;
+    font-size:13.5px;display:inline-flex;align-items:center;gap:8px;
+    transition:background .16s,border-color .16s;
+  }
+  .btn-go:hover{background:var(--red);border-color:var(--red)}
+  .link-quiet{
+    font-size:13px;color:var(--ink-3);text-decoration:none;
+    border-bottom:1px solid var(--line-2);padding-bottom:1px;
+    transition:color .16s,border-color .16s;
+  }
+  .link-quiet:hover{color:var(--red);border-color:var(--red)}
+  .note{font-family:var(--mono);font-size:10.5px;color:var(--ink-4);letter-spacing:.05em}
+
+  /* 图版：模型直接浮在纸面上，只给脚下一点柔光 */
+  .specimen{position:relative;margin:0}
+  .specimen::before{
+    content:"";position:absolute;left:10%;right:16%;top:83%;height:11%;
+    background:radial-gradient(50% 50% at 50% 50%,rgba(28,27,24,.13),rgba(28,27,24,0) 72%);
+    filter:blur(14px);
+  }
+  .specimen img{
+    position:relative;width:100%;height:auto;
+  }
+  .spec-cap{
+    position:relative;margin-top:2px;
+    font-family:var(--mono);font-size:10px;line-height:1.7;
+    letter-spacing:.07em;color:var(--ink-4);
+  }
+  .spec-cap b{color:var(--ink-3);font-weight:500;display:block}
+
+  /* ---------- 科目索引 ---------- */
+  .subjects{
+    flex:0 0 auto;display:grid;grid-template-columns:repeat(4,1fr);
+    border-top:1px solid var(--line);margin:0 40px;
+  }
+  .subj{
+    display:flex;align-items:baseline;gap:13px;
+    padding:17px 0 15px 26px;border-right:1px solid var(--line);
+    text-decoration:none;color:inherit;transition:background .16s;
+  }
+  .subj:first-child{padding-left:0}
+  .subj:last-child{border-right:0}
+  .subj:hover{background:var(--paper-2)}
+  .subj:hover .subj-name{color:var(--red)}
+  .subj-no{font-family:var(--mono);font-size:10px;color:var(--ink-4);letter-spacing:.1em}
+  .subj-name{
+    font-family:var(--serif);font-size:20px;font-weight:600;
+    letter-spacing:.04em;transition:color .16s;
+  }
+  .subj-cnt{font-family:var(--mono);font-size:10.5px;color:var(--ink-4);letter-spacing:.04em}
+
+  /* ---------- 版权条 ---------- */
+  .colophon{
+    flex:0 0 auto;display:flex;align-items:baseline;gap:24px;
+    padding:15px 40px 20px;font-size:12px;color:var(--ink-3);line-height:1.7;
+    flex-wrap:wrap;
+  }
+  .c-left{font-family:var(--mono);font-size:11px;letter-spacing:.04em}
+  .c-left a,.c-right a{color:inherit;text-decoration:none;border-bottom:1px solid var(--line-2)}
+  .c-left a:hover,.c-right a:hover{color:var(--red);border-color:var(--red)}
+  .c-right{margin-left:auto;text-align:right}
+
+  /* ---------- 响应式 ---------- */
+  @media(max-width:1100px){
+    .hero{grid-template-columns:minmax(0,1fr) 380px;gap:40px}
+    h1{font-size:44px}
+    .subjects{margin:0 40px}
+  }
+  @media(max-width:900px){
+    .hero{
+      grid-template-columns:1fr;gap:24px;align-items:start;
+      padding:36px 20px 8px;
+    }
+    h1{font-size:32px}
+    .claim{font-size:13.5px;line-height:1.9;margin-top:14px}
+    .figures{max-width:none;margin-top:20px}
+    .acts{margin-top:20px;gap:16px}
+    .specimen{width:100%;max-width:340px;margin:12px auto 0}
+    .subjects{grid-template-columns:repeat(2,1fr);margin:0 20px}
+    .subj{padding:14px 0 12px 18px}
+    .subj:nth-child(2){padding-left:18px}
+    .subj:nth-child(1),.subj:nth-child(3){padding-left:0}
+    .subj:nth-child(1),.subj:nth-child(2){border-bottom:1px solid var(--line)}
+    .subj:nth-child(2),.subj:nth-child(4){border-right:0}
+    .colophon{padding:14px 20px 18px;font-size:11.5px;gap:10px}
+    .c-right{margin-left:0;text-align:left}
+  }
+  @media(max-width:620px){
+    h1{font-size:28px}
+    .kicker{font-size:10px;margin-bottom:12px}
+    .fig b{font-size:20px}
+    .specimen{max-width:300px}
+  }
+</style>
