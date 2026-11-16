@@ -1,0 +1,89 @@
+---
+import Base from '../../layouts/Base.astro';
+import items from '../../data/more.json';
+import meta from '../../data/site-meta.json';
+
+const list = items;
+---
+
+<Base
+  title="更多项目"
+  description="另外收录的两个三维作品：细胞结构工坊、江山时序。整份托管在本站，点开即用，不跳外链。"
+>
+  <div class="filterbar">
+    <span class="crumb">额外收录 / <b>更多项目</b></span>
+    <div class="filter-right">
+      <span class="stat"><b>{list.length}</b> 个项目</span>
+    </div>
+  </div>
+
+  <main>
+    <div class="lede">
+      <h1>更多项目</h1>
+      <p>不按人教版章节写，但课堂上用得上 · 整份收录，站内直接打开</p>
+    </div>
+
+    <div class="more-grid">
+      {list.map((it, i) => (
+        <a class="card" href={`/more/${it.slug}/`}>
+          <div class="stage">
+            <img src={it.thumb} alt={`${it.name} 界面截图`} width="720" height="480" loading="lazy" decoding="async" />
+            <span class="badge">{it.tag}</span>
+          </div>
+          <div class="card-body">
+            <div class="card-topline">
+              <span class="card-no">0{i + 1} · {it.author}</span>
+              <span class="fig-no">{it.sizeLabel}</span>
+            </div>
+            <h2 class="card-title">{it.name}</h2>
+            <p class="card-mainline">{it.mainline}</p>
+            <div class="card-meta">
+              <span>{it.licenseShort}</span>
+              <span class="sep">·</span>
+              <span>{it.sizeLabel}</span>
+              <span class="card-open">打开 →</span>
+            </div>
+          </div>
+        </a>
+      ))}
+    </div>
+
+    <div class="more-foot">
+      <p>
+        这两个都不是本站做的：细胞结构工坊来自 GordenSun，江山时序来自 DeanChensj。
+        本站把它们整份放在自己的服务器上（<code>public/third/</code>），代码与素材未做改动，各自的授权见项目页。
+      </p>
+      <a class="link-quiet" href="/all/">看本站 {meta.lessonCount} 门教材课件 →</a>
+    </div>
+  </main>
+</Base>
+
+<style>
+  .more-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-bottom:26px}
+  .more-grid .card-title{font-size:19px}
+  .card-open{
+    margin-left:auto;flex-shrink:0;color:var(--ink-3);
+    transition:color .16s;
+  }
+  .more-grid .card:hover .card-open{color:var(--red)}
+  .more-foot{
+    border-top:1px solid var(--line);padding-top:16px;
+    display:flex;align-items:baseline;gap:24px;flex-wrap:wrap;
+  }
+  .more-foot p{
+    font-size:12.5px;color:var(--ink-3);line-height:1.8;max-width:640px;flex:1;min-width:260px;
+  }
+  .more-foot code{
+    font-family:var(--mono);font-size:11px;color:var(--ink-2);
+    background:var(--paper-3);padding:1px 4px;border-radius:2px;
+  }
+  .link-quiet{
+    font-size:13px;color:var(--ink-3);text-decoration:none;
+    border-bottom:1px solid var(--line-2);padding-bottom:1px;white-space:nowrap;
+    transition:color .16s,border-color .16s;
+  }
+  .link-quiet:hover{color:var(--red);border-color:var(--red)}
+  @media(max-width:900px){
+    .more-grid{grid-template-columns:1fr}
+  }
+</style>

@@ -27,7 +27,7 @@ const related = useChapter ? chapterSiblings : bookSiblings.slice(0, 6);
 const relatedLabel = useChapter ? '本章其他课件' : '同册其他课件';
 
 const chapNo = l.chapterLabel.replace('第', '').replace('章', '');
-const figNo = `${chapNo}-${l.section ? String(l.section).padStart(2, '0') : '00'}`;
+const figNo = l.fig || `${chapNo}-${l.section ? String(l.section).padStart(2, '0') : '00'}`;
 const sizeMB = (l.bytes / 1024 / 1024).toFixed(2);
 ---
 
@@ -71,7 +71,9 @@ const sizeMB = (l.bytes / 1024 / 1024).toFixed(2);
       <div class="frame-note">
         <span>拖动 / 滚轮可旋转视角</span>
         <span style="color:var(--ink-4)">·</span>
-        <span>{l.steps} 步 · {l.quiz} 道检测</span>
+        {l.steps > 0
+          ? <span>{l.steps} 步{l.quiz > 0 ? ` · ${l.quiz} 道检测` : ''}</span>
+          : <span>开放式沙盘 · 参数自行调</span>}
         <span style="color:var(--ink-4)">·</span>
         <span>{sizeMB} MB 单文件，可离线运行</span>
       </div>
@@ -86,7 +88,12 @@ const sizeMB = (l.bytes / 1024 / 1024).toFixed(2);
         <div class="meta-row"><dt>教材</dt><dd>人教版 · {l.bookLabel}</dd></div>
         <div class="meta-row"><dt>章节</dt><dd>{l.chapterLabel}{l.section ? ` 第 ${l.section} 节` : ''}</dd></div>
         {l.type && <div class="meta-row"><dt>类型</dt><dd>{l.type}</dd></div>}
-        <div class="meta-row"><dt>来源</dt><dd class="tag">铜匠实验室</dd></div>
+        <div class="meta-row">
+          <dt>来源</dt>
+          <dd class="tag">{l.sourceUrl
+            ? <a href={l.sourceUrl} target="_blank" rel="noopener">{l.source}</a>
+            : (l.source || '铜匠实验室')}</dd>
+        </div>
         <div class="meta-row"><dt>文件</dt><dd class="tag">{l.slug}.html · {sizeMB} MB</dd></div>
       </dl>
 
@@ -109,8 +116,14 @@ const sizeMB = (l.bytes / 1024 / 1024).toFixed(2);
       <div class="license">
         <span class="lic-k">许可</span>
         <span class="lic-v">
-          内容来自 <a href="https://lab.tongjiang.app" target="_blank" rel="noopener">铜匠实验室</a>，
-          以 <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a> 分享，仅限非商业教学用途。
+          {l.licenseNote ? (
+            l.licenseNote
+          ) : (
+            <>
+              内容来自 <a href="https://lab.tongjiang.app" target="_blank" rel="noopener">铜匠实验室</a>，
+              以 <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a> 分享，仅限非商业教学用途。
+            </>
+          )}
         </span>
       </div>
     </aside>

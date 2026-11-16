@@ -6,7 +6,7 @@
  "license": "CC BY-NC 4.0",
  "licenseUrl": "https://creativecommons.org/licenses/by-nc/4.0/",
  "textbookEdition": "人教版 2019（普通高中课程标准）",
- "lessonCount": 54,
+ "lessonCount": 55,
  "stepCount": 453,
  "subjects": [
   {
@@ -107,7 +107,7 @@
    "name": "地理",
    "slug": "dili",
    "order": 4,
-   "count": 14,
+   "count": 15,
    "books": [
     {
      "key": "bx1",
@@ -121,7 +121,7 @@
      "label": "选择性必修一册",
      "short": "选必一",
      "order": 11,
-     "count": 7
+     "count": 8
     },
     {
      "key": "xxbx3",

@@ -78,6 +78,7 @@ const groups = meta.subjects.map(s => {
                       chapterLabel={l.chapterLabel}
                       section={l.section}
                       sectionTitle={l.sectionTitle}
+                      figNo={l.fig}
                       thumb={hasThumb(l.slug) ? `/thumbs/${l.slug}.webp` : undefined}
                     />
                   ))}

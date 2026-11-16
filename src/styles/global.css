@@ -58,6 +58,12 @@ img{max-width:100%;display:block}
 }
 .nav a:hover{background:var(--paper-3);color:var(--ink)}
 .nav a[aria-current]{color:var(--red);font-weight:500}
+/* 「更多」与四个科目之间隔一道竖线：它是另一类内容，不属于教材目录 */
+.nav-sep{
+  width:1px;height:13px;background:var(--line-2);align-self:center;margin:0 7px;
+  flex-shrink:0;
+}
+.nav a.nav-more{color:var(--ink-3)}
 .search{
   margin-left:auto;display:flex;align-items:center;gap:8px;
   border:1px solid var(--line);border-radius:2px;padding:0 12px;height:36px;

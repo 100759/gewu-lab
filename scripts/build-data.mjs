@@ -151,6 +151,23 @@ for (const l of lessons) {
   }
 }
 
+/* ---------- 手动追加的课件 ---------- */
+// 不在上游 catalog 里、由本站自行维护的课件放在 extra-lessons.json，
+// 每次重新生成数据时合并进来，避免被脚本覆盖掉。
+// 对应的 HTML 文件需自行放进 public/models/。
+const EXTRA_PATH = join(ROOT, 'src/data/extra-lessons.json');
+if (existsSync(EXTRA_PATH)) {
+  const extra = JSON.parse(readFileSync(EXTRA_PATH, 'utf8'));
+  lessons.push(...extra);
+  lessons.sort((a, b) =>
+    a.subjectOrder - b.subjectOrder ||
+    a.bookOrder - b.bookOrder ||
+    a.chapterOrder - b.chapterOrder ||
+    (a.section || 99) - (b.section || 99)
+  );
+  console.log(`合并额外课件 ${extra.length} 门`);
+}
+
 /* ---------- 统计 ---------- */
 const subjects = Object.entries(SUBJECTS).map(([name, cfg]) => {
   const list = lessons.filter(l => l.subject === name);
