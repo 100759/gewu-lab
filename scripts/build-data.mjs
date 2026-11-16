@@ -15,7 +15,8 @@ const SUBJECTS = {
   物理: { slug: 'wuli', order: 1 },
   化学: { slug: 'huaxue', order: 2 },
   生物: { slug: 'shengwu', order: 3 },
-  地理: { slug: 'dili', order: 4 }
+  地理: { slug: 'dili', order: 4 },
+  历史: { slug: 'lishi', order: 5 }
 };
 
 /* ---------- 教材（册）---------- */

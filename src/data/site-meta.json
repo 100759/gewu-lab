@@ -2,11 +2,11 @@
  "nameZh": "铜匠实验室",
  "name": "Tongjiang Lab",
  "site": "https://lab.tongjiang.app",
- "descriptionZh": "免费、可交互的高中科学 3D 实验课件，覆盖物理、化学、生物、地理。每门课是一个可离线运行的自包含 HTML 文件。",
+ "descriptionZh": "开源、免费、公益的高中交互式 3D 教学模型库，覆盖物理、化学、生物、地理、历史。每门课都能在浏览器里直接演示。",
  "license": "CC BY-NC 4.0",
  "licenseUrl": "https://creativecommons.org/licenses/by-nc/4.0/",
  "textbookEdition": "人教版 2019（普通高中课程标准）",
- "lessonCount": 55,
+ "lessonCount": 57,
  "stepCount": 453,
  "subjects": [
   {
@@ -85,14 +85,14 @@
    "name": "生物",
    "slug": "shengwu",
    "order": 3,
-   "count": 5,
+   "count": 6,
    "books": [
     {
      "key": "bx1",
      "label": "必修第一册",
      "short": "必修一",
      "order": 1,
-     "count": 4
+     "count": 5
     },
     {
      "key": "xxbx1",
@@ -128,6 +128,21 @@
      "label": "选择性必修三册",
      "short": "选必三",
      "order": 13,
+     "count": 1
+    }
+   ]
+  },
+  {
+   "name": "历史",
+   "slug": "lishi",
+   "order": 5,
+   "count": 1,
+   "books": [
+    {
+     "key": "bx1",
+     "label": "必修 中外历史纲要（上）",
+     "short": "纲要上",
+     "order": 1,
      "count": 1
     }
    ]

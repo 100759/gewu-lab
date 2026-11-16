@@ -29,33 +29,34 @@ const relatedLabel = useChapter ? '本章其他课件' : '同册其他课件';
 const chapNo = l.chapterLabel.replace('第', '').replace('章', '');
 const figNo = l.fig || `${chapNo}-${l.section ? String(l.section).padStart(2, '0') : '00'}`;
 const sizeMB = (l.bytes / 1024 / 1024).toFixed(2);
+const src = l.embed || `/models/${l.slug}.html`;
 ---
 
 <Base title={l.title} description={l.mainline || `${l.subject} · ${l.bookLabel} · ${l.chapterLabel}`} noFooter>
-  <div class="detail-main">
+  <div class={`detail-main${l.embed ? ' is-embed' : ''}`}>
     <div class="detail-stage">
       <div class="stage-toolbar">
         <span class="crumb" style="margin-right:6px">
           <a href={`/${l.subjectSlug}/`}>{l.subject}</a> / {l.bookShort} / <b>{l.chapterLabel}</b>
         </span>
         <span class="st-title">FIG. {figNo}</span>
-        <a class="btn-line" href={`/models/${l.slug}.html`} target="_blank" rel="noopener">
+        <a class="btn-line" href={src} target="_blank" rel="noopener">
           <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
             <path d="M6 2H2v4M10 14h4v-4M2 2l4.5 4.5M14 14L9.5 9.5"/>
           </svg>
           全屏
         </a>
-        <a class="btn-solid" href={`/models/${l.slug}.html`} download={`${l.slug}.html`}>
+        {!l.embed && <a class="btn-solid" href={src} download={`${l.slug}.html`}>
           <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
             <path d="M8 2v9M4.5 8L8 11.5 11.5 8M2 13.5h12"/>
           </svg>
           下载
-        </a>
+        </a>}
       </div>
       <div class="frame-wrap">
         <div class="frame-plate">
           <iframe
-            src={`/models/${l.slug}.html`}
+            src={src}
             title={`${l.title} 交互演示`}
             scrolling="no"
             allow="fullscreen"
@@ -75,7 +76,7 @@ const sizeMB = (l.bytes / 1024 / 1024).toFixed(2);
           ? <span>{l.steps} 步{l.quiz > 0 ? ` · ${l.quiz} 道检测` : ''}</span>
           : <span>开放式沙盘 · 参数自行调</span>}
         <span style="color:var(--ink-4)">·</span>
-        <span>{sizeMB} MB 单文件，可离线运行</span>
+        <span>{sizeMB} MB {l.embed ? '整份托管，随站点运行' : '单文件，可离线运行'}</span>
       </div>
     </div>
 
@@ -85,7 +86,7 @@ const sizeMB = (l.bytes / 1024 / 1024).toFixed(2);
 
       <dl class="meta-list">
         <div class="meta-row"><dt>科目</dt><dd>{l.subject}</dd></div>
-        <div class="meta-row"><dt>教材</dt><dd>人教版 · {l.bookLabel}</dd></div>
+        <div class="meta-row"><dt>教材</dt><dd>{l.edition || '人教版'} · {l.bookLabel}</dd></div>
         <div class="meta-row"><dt>章节</dt><dd>{l.chapterLabel}{l.section ? ` 第 ${l.section} 节` : ''}</dd></div>
         {l.type && <div class="meta-row"><dt>类型</dt><dd>{l.type}</dd></div>}
         <div class="meta-row">
@@ -94,7 +95,7 @@ const sizeMB = (l.bytes / 1024 / 1024).toFixed(2);
             ? <a href={l.sourceUrl} target="_blank" rel="noopener">{l.source}</a>
             : (l.source || '铜匠实验室')}</dd>
         </div>
-        <div class="meta-row"><dt>文件</dt><dd class="tag">{l.slug}.html · {sizeMB} MB</dd></div>
+        <div class="meta-row"><dt>文件</dt><dd class="tag">{l.embed ? `整份收录 · ${sizeMB} MB` : `${l.slug}.html · ${sizeMB} MB`}</dd></div>
       </dl>
 
       <h3>教材定位</h3>

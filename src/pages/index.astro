@@ -8,7 +8,7 @@ const subjects = [...meta.subjects].sort((a, b) => a.order - b.order);
 
 <Base
   noFooter
-  description={`全部开源、纯公益的高中 3D 交互课件库，共 ${meta.lessonCount} 门（物理、化学、生物、地理），打开即演示，可离线下载。`}
+  description={`全部开源、纯公益的高中 3D 交互课件库，共 ${meta.lessonCount} 门（物理、化学、生物、地理、历史），打开即演示，可离线下载。`}
 >
   <div class="land">
 
@@ -29,7 +29,7 @@ const subjects = [...meta.subjects].sort((a, b) => a.order - b.order);
         <div class="acts">
           <a class="btn-go" href="/all/">进入课件目录 <span aria-hidden="true">→</span></a>
           <a class="link-quiet" href="/about/">授权与使用说明</a>
-          <span class="note">全部可离线下载</span>
+          <span class="note">可下载离线使用</span>
         </div>
       </div>
 
@@ -59,19 +59,10 @@ const subjects = [...meta.subjects].sort((a, b) => a.order - b.order);
       ))}
     </nav>
 
-    <div class="more-band">
-      <span class="mb-k">另外收录</span>
-      <div class="mb-links">
-        <a href="/more/cell-studio/">细胞结构工坊</a>
-        <span class="mb-dot" aria-hidden="true">·</span>
-        <a href="/more/jiangshan-map/">江山时序</a>
-      </div>
-      <a class="mb-go" href="/more/">更多项目 <span aria-hidden="true">→</span></a>
-    </div>
 
     <div class="colophon">
       <div class="c-left">
-        全部课件开放共享 · 来源与授权见各课件页 · 非商业教学用途
+        课件内容开源、免费、公益 · 部分从网上收集或老师投稿，如有侵权请联系删除
       </div>
       <div class="c-right">
         纯公益，永久免费，不接广告　·　<a href="/submit/">欢迎各位老师分享与投稿</a>
@@ -159,7 +150,7 @@ const subjects = [...meta.subjects].sort((a, b) => a.order - b.order);
 
   /* ---------- 科目索引 ---------- */
   .subjects{
-    flex:0 0 auto;display:grid;grid-template-columns:repeat(4,1fr);
+    flex:0 0 auto;display:grid;grid-template-columns:repeat(5,1fr);
     border-top:1px solid var(--line);margin:0 40px;
   }
   .subj{
@@ -178,30 +169,6 @@ const subjects = [...meta.subjects].sort((a, b) => a.order - b.order);
   }
   .subj-cnt{font-family:var(--mono);font-size:10.5px;color:var(--ink-4);letter-spacing:.04em}
 
-  /* ---------- 另外收录 ---------- */
-  .more-band{
-    flex:0 0 auto;display:flex;align-items:baseline;gap:14px;
-    margin:0 40px;padding:13px 0;border-top:1px solid var(--line);
-    font-size:12.5px;color:var(--ink-3);flex-wrap:wrap;
-  }
-  .mb-k{
-    font-family:var(--mono);font-size:10px;letter-spacing:.11em;
-    color:var(--ink-4);flex-shrink:0;
-  }
-  .mb-links{display:flex;align-items:baseline;gap:9px;min-width:0}
-  .mb-links a{
-    color:var(--ink-2);text-decoration:none;
-    border-bottom:1px solid transparent;padding-bottom:1px;
-    transition:color .16s,border-color .16s;
-  }
-  .mb-links a:hover{color:var(--red);border-color:var(--red)}
-  .mb-dot{color:var(--ink-4)}
-  .mb-go{
-    margin-left:auto;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;
-    color:var(--ink-3);text-decoration:none;white-space:nowrap;
-    transition:color .16s;
-  }
-  .mb-go:hover{color:var(--red)}
 
   /* ---------- 版权条 ---------- */
   .colophon{
@@ -237,7 +204,6 @@ const subjects = [...meta.subjects].sort((a, b) => a.order - b.order);
     .subj:nth-child(1),.subj:nth-child(2){border-bottom:1px solid var(--line)}
     .subj:nth-child(2),.subj:nth-child(4){border-right:0}
     .colophon{padding:14px 20px 18px;font-size:11.5px;gap:10px}
-    .more-band{margin:0 20px;gap:10px}
     .c-right{margin-left:0;text-align:left}
   }
   @media(max-width:620px){

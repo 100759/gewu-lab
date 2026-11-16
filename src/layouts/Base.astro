@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import META from '../data/site-meta.json';
 
 interface Props {
   title?: string;
@@ -17,12 +18,7 @@ const {
 
 const fullTitle = title.includes('格物') ? title : `${title} · 格物`;
 
-const SUBJECTS = [
-  { name: '物理', slug: 'wuli' },
-  { name: '化学', slug: 'huaxue' },
-  { name: '生物', slug: 'shengwu' },
-  { name: '地理', slug: 'dili' }
-];
+const SUBJECTS = META.subjects.map((x) => ({ name: x.name, slug: x.slug }));
 const path = Astro.url.pathname;
 ---
 
@@ -50,8 +46,6 @@ const path = Astro.url.pathname;
     {SUBJECTS.map(s => (
       <a href={`/${s.slug}/`} aria-current={path.startsWith(`/${s.slug}/`) ? 'page' : undefined}>{s.name}</a>
     ))}
-    <span class="nav-sep" aria-hidden="true"></span>
-    <a class="nav-more" href="/more/" aria-current={path.startsWith('/more') ? 'page' : undefined}>更多</a>
   </nav>
   <label class="search">
     <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
@@ -75,9 +69,7 @@ const path = Astro.url.pathname;
   <div>
     <div class="f-brand">格物 · 高中交互模型库</div>
     <p class="f-note">
-      课件内容来自 <a href="https://lab.tongjiang.app" target="_blank" rel="noopener">铜匠实验室（Tongjiang Lab）</a>，
-      以 <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a> 协议分享，
-      仅限非商业教学用途，转载请署名原作者。另有收录的课件与项目，版权归各自作者，授权见对应页面。
+      课件内容开源、免费、公益。部分从网上收集或者由老师投稿，如有侵权请联系删除。
     </p>
   </div>
   <div class="f-right">
